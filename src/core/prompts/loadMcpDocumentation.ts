@@ -1,7 +1,7 @@
 import { McpHub } from "@services/mcp/McpHub"
 
 export async function loadMcpDocumentation(mcpHub: McpHub) {
-	return `## 创建MCP服务器
+  return `## 创建MCP服务器
 
 创建MCP服务器时，需要理解它们运行在非交互式环境中。服务器无法在运行时启动OAuth流程、打开浏览器窗口或提示用户输入。所有凭证和认证令牌必须通过MCP设置配置中的环境变量预先提供。例如，Spotify的API使用OAuth获取用户的刷新令牌，但MCP服务器无法启动此流程。虽然可以引导用户获取应用程序客户端ID和密钥，但可能需要创建一个单独的一次性设置脚本（如get-refresh-token.js），该脚本捕获并记录最终的关键部分：用户的刷新令牌（例如，可以使用execute_command运行脚本，打开浏览器进行认证，然后记录刷新令牌，以便在命令输出中查看并将其用于MCP设置配置）。
 
@@ -343,13 +343,12 @@ npm run build
 
 ## 编辑MCP服务器
 
-用户可能要求添加工具或资源，这些可能适合添加到现有的MCP服务器（列在下面的"Connected MCP Servers"中：${
-		mcpHub
-			.getServers()
-			.filter((server) => server.status === "connected")
-			.map((server) => server.name)
-			.join(", ") || "(None running currently)"
-	}，例如如果使用相同的API。如果能通过查看服务器参数中的文件路径在用户系统上定位MCP服务器仓库，这是可能的。然后可以使用list_files和read_file探索仓库中的文件，并使用replace_in_file修改文件。
+用户可能要求添加工具或资源，这些可能适合添加到现有的MCP服务器（列在下面的"Connected MCP Servers"中：${mcpHub
+      .getServers()
+      .filter((server) => server.status === "connected")
+      .map((server) => server.name)
+      .join(", ") || "(None running currently)"
+    }，例如如果使用相同的API。如果能通过查看服务器参数中的文件路径在用户系统上定位MCP服务器仓库，这是可能的。然后可以使用list_files和read_file探索仓库中的文件，并使用replace_in_file修改文件。
 
 然而，某些MCP服务器可能是从安装的包而非本地仓库运行的，此时创建新的MCP服务器可能更合适。
 

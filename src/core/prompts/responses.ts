@@ -94,17 +94,17 @@ ${toolUseInstructionsReminder}
 
 		const clineIgnoreParsed = clineIgnoreController
 			? sorted.map((filePath) => {
-					// 路径为相对于绝对路径的相对路径，而非当前工作目录
-					// validateAccess 期望工作目录相对路径或绝对路径
-					// 否则对于诸如 "assets/icons" 的忽略模式，最终会得到仅 "icons" 的结果，导致路径未被忽略
-					const absoluteFilePath = path.resolve(absolutePath, filePath)
-					const isIgnored = !clineIgnoreController.validateAccess(absoluteFilePath)
-					if (isIgnored) {
-						return LOCK_TEXT_SYMBOL + " " + filePath
-					}
+				// 路径为相对于绝对路径的相对路径，而非当前工作目录
+				// validateAccess 期望工作目录相对路径或绝对路径
+				// 否则对于诸如 "assets/icons" 的忽略模式，最终会得到仅 "icons" 的结果，导致路径未被忽略
+				const absoluteFilePath = path.resolve(absolutePath, filePath)
+				const isIgnored = !clineIgnoreController.validateAccess(absoluteFilePath)
+				if (isIgnored) {
+					return LOCK_TEXT_SYMBOL + " " + filePath
+				}
 
-					return filePath
-				})
+				return filePath
+			})
 			: sorted
 
 		if (didHitLimit) {
@@ -133,23 +133,20 @@ ${toolUseInstructionsReminder}
 		wasRecent: boolean | 0 | undefined,
 		responseText?: string,
 	): [string, string] => {
-		const taskResumptionMessage = `[任务恢复] ${
-			mode === "plan"
+		const taskResumptionMessage = `[任务恢复] ${mode === "plan"
 				? `此任务在 ${agoText} 被中断。对话可能不完整。请注意此时项目状态可能已改变。当前工作目录为 '${cwd.toPosix()}'。\n\n注意：若您之前尝试过用户未提供结果的工具操作，应视为操作未成功。但您处于计划模式，因此不应继续任务，而应响应用户的当前消息。`
 				: `此任务在 ${agoText} 被中断。可能已完成或未完成，请重新评估任务上下文。请注意此时项目状态可能已改变。当前工作目录为 '${cwd.toPosix()}'。若任务未完成，请重试中断前的最后一步操作并继续完成任务。\n\n注意：若您之前尝试过用户未提供结果的工具操作，应视为操作未成功并评估是否重试。若最后工具为 browser_action，浏览器已关闭，必须重新启动浏览器。`
-		}${
-			wasRecent
+			}${wasRecent
 				? "\n\n重要：若最后工具为 replace_in_file 或 write_to_file 且被中断，则文件已回滚到编辑前状态，无需重新读取文件，您已拥有最新内容。"
 				: ""
-		}`
+			}`
 
-		const userResponseMessage = `${
-			responseText
+		const userResponseMessage = `${responseText
 				? `${mode === "plan" ? "用 plan_mode_respond 工具响应的新消息 (请确保在 <response> 参数中提供响应)" : "任务继续的新指令"}:\n<user_message>\n${responseText}\n</user_message>`
 				: mode === "plan"
 					? "(用户未提供新消息。可考虑询问其希望如何继续，或建议切换到执行模式继续任务。)"
 					: ""
-		}`
+			}`
 
 		return [taskResumptionMessage, userResponseMessage]
 	},
@@ -229,18 +226,18 @@ ${toolUseInstructionsReminder}
 const formatImagesIntoBlocks = (images?: string[]): Anthropic.ImageBlockParam[] => {
 	return images
 		? images.map((dataUrl) => {
-				// data:image/png;base64,base64string
-				const [rest, base64] = dataUrl.split(",")
-				const mimeType = rest.split(":")[1].split(";")[0]
-				return {
-					type: "image",
-					source: {
-						type: "base64",
-						media_type: mimeType,
-						data: base64,
-					},
-				} as Anthropic.ImageBlockParam
-			})
+			// data:image/png;base64,base64string
+			const [rest, base64] = dataUrl.split(",")
+			const mimeType = rest.split(":")[1].split(";")[0]
+			return {
+				type: "image",
+				source: {
+					type: "base64",
+					media_type: mimeType,
+					data: base64,
+				},
+			} as Anthropic.ImageBlockParam
+		})
 		: []
 }
 

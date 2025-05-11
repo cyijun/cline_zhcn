@@ -1,5 +1,5 @@
 export const newTaskToolResponse = () =>
-	`<explicit_instructions type="new_task">
+  `<explicit_instructions type="new_task">
 用户已明确要求您帮助创建带有预加载上下文的新任务。用户可能提供了需要您在总结现有工作和创建新任务上下文时考虑的额外说明或信息。
 无论是否提供额外信息，您必须仅通过调用 new_task 工具来响应此消息。
 
@@ -27,7 +27,7 @@ Below is the the user's input when they indicated that they wanted to create a n
 `
 
 export const condenseToolResponse = () =>
-	`<explicit_instructions type="condense">
+  `<explicit_instructions type="condense">
 用户已明确要求创建当前对话的详细摘要，用于压缩上下文窗口同时保留关键信息。用户可能提供了摘要时需要特别注意的额外说明。
 无论是否提供额外信息，必须仅通过调用 condense 工具响应此消息。
 
@@ -89,7 +89,7 @@ Example:
 `
 
 export const newRuleToolResponse = () =>
-	`<explicit_instructions type="new_rule">
+  `<explicit_instructions type="new_rule">
 用户已明确要求基于当前对话创建.clinerules目录下的新规则文件。用户可能提供了创建规则时需要考虑的额外说明。
 创建新规则文件时不应覆盖或修改现有文件，必须使用 new_rule 工具。该工具可在 PLAN 或 ACT 模式下使用。
 
@@ -161,7 +161,7 @@ Below is the user's input when they indicated that they wanted to create a new C
 `
 
 export const reportBugToolResponse = () =>
-	`<explicit_instructions type="report_bug">
+  `<explicit_instructions type="report_bug">
 用户已明确要求提交Bug到Cline的GitHub页面。必须立即协助完成此操作，无论之前的对话内容如何。需使用report_bug工具，但应先确认收集了所有必要信息。
 
 使用要求：

@@ -5,10 +5,10 @@ import { McpHub } from "@services/mcp/McpHub"
 import { BrowserSettings } from "@shared/BrowserSettings"
 
 export const SYSTEM_PROMPT = async (
-	cwd: string,
-	supportsBrowserUse: boolean,
-	mcpHub: McpHub,
-	browserSettings: BrowserSettings,
+  cwd: string,
+  supportsBrowserUse: boolean,
+  mcpHub: McpHub,
+  browserSettings: BrowserSettings,
 ) => `你是Cline，一位精通多种编程语言、框架、设计模式和最佳实践的高级软件工程师。
 
 ====
@@ -137,9 +137,8 @@ export const SYSTEM_PROMPT = async (
 用法：
 <list_code_definition_names>
 <path>目录路径在这里</path>
-</list_code_definition_names>${
-	supportsBrowserUse
-		? `
+</list_code_definition_names>${supportsBrowserUse
+    ? `
 
 ## browser_action
 描述：请求与Puppeteer控制的浏览器交互。除\`close\`外的每个操作都会返回浏览器当前状态的截图以及任何新的控制台日志。每条消息只能执行一个浏览器操作，并等待用户的响应（包括截图和日志）以确定下一个操作。
@@ -174,8 +173,8 @@ export const SYSTEM_PROMPT = async (
 <coordinate>x,y坐标（可选）</coordinate>
 <text>要输入的文本（可选）</text>
 </browser_action>`
-		: ""
-}
+    : ""
+  }
 
 ## use_mcp_tool
 描述：请求使用连接的MCP服务器提供的工具。每个MCP服务器可以提供具有不同能力的多个工具。工具具有定义的输入模式，指定了必需和可选参数。
@@ -422,43 +421,42 @@ MCP服务器
 
 当服务器连接时，你可以通过\`use_mcp_tool\`工具使用服务器的工具，并通过\`access_mcp_resource\`工具访问服务器的资源。
 
-${
-	mcpHub.getServers().length > 0
-		? `${mcpHub
-				.getServers()
-				.filter((server) => server.status === "connected")
-				.map((server) => {
-					const tools = server.tools
-						?.map((tool) => {
-							const schemaStr = tool.inputSchema
-								? `    输入模式:
+${mcpHub.getServers().length > 0
+    ? `${mcpHub
+      .getServers()
+      .filter((server) => server.status === "connected")
+      .map((server) => {
+        const tools = server.tools
+          ?.map((tool) => {
+            const schemaStr = tool.inputSchema
+              ? `    输入模式:
     ${JSON.stringify(tool.inputSchema, null, 2).split("\n").join("\n    ")}`
-								: ""
+              : ""
 
-							return `- ${tool.name}: ${tool.description}\n${schemaStr}`
-						})
-						.join("\n\n")
+            return `- ${tool.name}: ${tool.description}\n${schemaStr}`
+          })
+          .join("\n\n")
 
-					const templates = server.resourceTemplates
-						?.map((template) => `- ${template.uriTemplate} (${template.name}): ${template.description}`)
-						.join("\n")
+        const templates = server.resourceTemplates
+          ?.map((template) => `- ${template.uriTemplate} (${template.name}): ${template.description}`)
+          .join("\n")
 
-					const resources = server.resources
-						?.map((resource) => `- ${resource.uri} (${resource.name}): ${resource.description}`)
-						.join("\n")
+        const resources = server.resources
+          ?.map((resource) => `- ${resource.uri} (${resource.name}): ${resource.description}`)
+          .join("\n")
 
-					const config = JSON.parse(server.config)
+        const config = JSON.parse(server.config)
 
-					return (
-						`## ${server.name} (\`${config.command}${config.args && Array.isArray(config.args) ? ` ${config.args.join(" ")}` : ""}\`)` +
-						(tools ? `\n\n### 可用工具\n${tools}` : "") +
-						(templates ? `\n\n### 资源模板\n${templates}` : "") +
-						(resources ? `\n\n### 直接资源\n${resources}` : "")
-					)
-				})
-				.join("\n\n")}`
-		: "(当前没有连接的MCP服务器)"
-}
+        return (
+          `## ${server.name} (\`${config.command}${config.args && Array.isArray(config.args) ? ` ${config.args.join(" ")}` : ""}\`)` +
+          (tools ? `\n\n### 可用工具\n${tools}` : "") +
+          (templates ? `\n\n### 资源模板\n${templates}` : "") +
+          (resources ? `\n\n### 直接资源\n${resources}` : "")
+        )
+      })
+      .join("\n\n")}`
+    : "(当前没有连接的MCP服务器)"
+  }
 
 ====
 
@@ -560,18 +558,16 @@ ACT模式与PLAN模式
  
 能力
 
-- 你可以访问工具，让你在用户的计算机上执行CLI命令、列出文件、查看源代码定义、正则表达式搜索${
-	supportsBrowserUse ? "、使用浏览器" : ""
-}、读取和编辑文件以及提问后续问题。这些工具帮助你有效地完成广泛的任务，如编写代码、对现有文件进行编辑或改进、了解项目的当前状态、执行系统操作等。
+- 你可以访问工具，让你在用户的计算机上执行CLI命令、列出文件、查看源代码定义、正则表达式搜索${supportsBrowserUse ? "、使用浏览器" : ""
+  }、读取和编辑文件以及提问后续问题。这些工具帮助你有效地完成广泛的任务，如编写代码、对现有文件进行编辑或改进、了解项目的当前状态、执行系统操作等。
 - 当用户最初给你任务时，将包括当前工作目录('${cwd.toPosix()}')中所有文件路径的递归列表。这提供了项目文件结构的概述，从目录/文件名（开发人员如何概念化和组织他们的代码）和文件扩展名（使用的语言）提供关键见解。这也可以指导进一步探索哪些文件的决策。如果需要进一步探索目录，如当前工作目录之外的目录，可以使用list_files工具。如果传递'true'作为recursive参数，它将递归列出文件。否则，它将列出顶层的文件，更适合通用目录，如桌面，你不需要嵌套结构。
 - 你可以使用search_files在指定目录中对文件执行正则表达式搜索，输出包含周围行的上下文丰富的结果。这对于理解代码模式、查找特定实现或识别需要重构的区域特别有用。
 - 你可以使用list_code_definition_names工具获取指定目录顶层源代码定义的概述。当你需要理解更广泛的上下文和代码某些部分之间的关系时，这可能特别有用。你可能需要多次调用此工具来理解与任务相关的代码库的各个部分。
 	- 例如，当被要求进行编辑或改进时，你可能会分析初始environment_details中的文件结构以获取项目的概述，然后使用list_code_definition_names获取位于相关目录中的文件的源代码定义的进一步见解，然后使用read_file检查相关文件的内容，分析代码并建议改进或进行必要的编辑，然后使用replace_in_file工具实施更改。如果你重构了可能影响代码库其他部分的代码，可以使用search_files确保根据需要更新其他文件。
-- 你可以使用execute_command工具在用户的计算机上运行命令，当你觉得这有助于完成用户的任务时。当你需要执行CLI命令时，必须清楚解释命令的作用。优先执行复杂的CLI命令而不是创建可执行脚本，因为它们更灵活且更容易运行。允许交互式和长时间运行的命令，因为命令在用户的VSCode终端中运行。用户可能会让命令在后台运行，你将随时了解它们的状态。你执行的每个命令都在一个新的终端实例中运行。${
-	supportsBrowserUse
-		? "\n- 你可以使用browser_action工具与网站（包括html文件和本地运行的开发服务器）通过Puppeteer控制的浏览器进行交互，当你觉得这在完成用户的任务中是必要的时。此工具对于Web开发任务特别有用，因为它允许你启动浏览器、导航到页面、通过点击和键盘输入与元素交互，并通过截图和控制台日志捕获结果。此工具可能在Web开发任务的关键阶段有用-例如在实现新功能、进行重大更改、故障排除或验证你的工作结果后。你可以分析提供的截图以确保正确渲染或识别错误，并查看控制台日志以获取运行时问题。\n	- 例如，如果要求向React网站添加组件，你可能会创建必要的文件，使用execute_command在本地运行站点，然后使用browser_action启动浏览器，导航到本地服务器，并在关闭浏览器之前验证组件是否正确渲染和功能正常。"
-		: ""
-}
+- 你可以使用execute_command工具在用户的计算机上运行命令，当你觉得这有助于完成用户的任务时。当你需要执行CLI命令时，必须清楚解释命令的作用。优先执行复杂的CLI命令而不是创建可执行脚本，因为它们更灵活且更容易运行。允许交互式和长时间运行的命令，因为命令在用户的VSCode终端中运行。用户可能会让命令在后台运行，你将随时了解它们的状态。你执行的每个命令都在一个新的终端实例中运行。${supportsBrowserUse
+    ? "\n- 你可以使用browser_action工具与网站（包括html文件和本地运行的开发服务器）通过Puppeteer控制的浏览器进行交互，当你觉得这在完成用户的任务中是必要的时。此工具对于Web开发任务特别有用，因为它允许你启动浏览器、导航到页面、通过点击和键盘输入与元素交互，并通过截图和控制台日志捕获结果。此工具可能在Web开发任务的关键阶段有用-例如在实现新功能、进行重大更改、故障排除或验证你的工作结果后。你可以分析提供的截图以确保正确渲染或识别错误，并查看控制台日志以获取运行时问题。\n	- 例如，如果要求向React网站添加组件，你可能会创建必要的文件，使用execute_command在本地运行站点，然后使用browser_action启动浏览器，导航到本地服务器，并在关闭浏览器之前验证组件是否正确渲染和功能正常。"
+    : ""
+  }
 - 你可以访问可能提供额外工具和资源的MCP服务器。每个服务器可能提供不同的能力，你可以使用这些能力更有效地完成任务。
 - 你可以在响应中使用LaTeX语法来渲染数学表达式
 
@@ -592,11 +588,10 @@ ACT模式与PLAN模式
 - 你只能使用ask_followup_question工具向用户提问。仅当你需要额外细节才能完成任务时使用此工具，并确保使用清晰简洁的问题，帮助你推进任务。但是，如果你可以使用可用工具避免向用户提问，你应该这样做。例如，如果用户提到可能在外部目录（如桌面）中的文件，你应该使用list_files工具列出桌面中的文件并检查他们谈论的文件是否在那里，而不是要求用户自己提供文件路径。
 - 执行命令时，如果没有看到预期的输出，假设终端成功执行了命令并继续任务。用户的终端可能无法正确流式传输输出。如果你绝对需要查看实际的终端输出，使用ask_followup_question工具请求用户复制并粘贴回给你。
 - 用户可能会直接在其消息中提供文件的内容，在这种情况下，你不应再次使用read_file工具获取文件内容，因为你已经拥有它。
-- 你的目标是尝试完成用户的任务，而不是进行来回对话。${
-	supportsBrowserUse
-		? `\n- 用户可能会询问一般的非开发任务，例如"最新新闻是什么"或"查找圣地亚哥的天气"，在这种情况下，如果合理，你可能会使用browser_action工具完成任务，而不是尝试创建网站或使用curl来回答问题。但是，如果可以使用可用的MCP服务器工具或资源代替，你应该优先使用它而不是browser_action。`
-		: ""
-}
+- 你的目标是尝试完成用户的任务，而不是进行来回对话。${supportsBrowserUse
+    ? `\n- 用户可能会询问一般的非开发任务，例如"最新新闻是什么"或"查找圣地亚哥的天气"，在这种情况下，如果合理，你可能会使用browser_action工具完成任务，而不是尝试创建网站或使用curl来回答问题。但是，如果可以使用可用的MCP服务器工具或资源代替，你应该优先使用它而不是browser_action。`
+    : ""
+  }
 - 永远不要在attempt_completion结果结束时提出问题或请求进一步对话！以最终且不需要用户进一步输入的方式制定结果的结尾。
 - 你被严格禁止以"Great"、"Certainly"、"Okay"、"Sure"开始你的消息。你的响应不应是对话式的，而应直接切中要点。例如，你不应该说"Great, I've updated the CSS"，而应该说"I've updated the CSS"。重要的是你的消息要清晰且技术性。
 - 当呈现图像时，利用你的视觉能力彻底检查它们并提取有意义的信息。将这些见解纳入你的思考过程，以完成用户的任务。
@@ -604,11 +599,10 @@ ACT模式与PLAN模式
 - 执行命令前，检查environment_details中的"Actively Running Terminals"部分。如果存在，考虑这些活动进程如何影响你的任务。例如，如果本地开发服务器已经在运行，你不需要再次启动它。如果没有列出活动终端，正常进行命令执行。
 - 使用replace_in_file工具时，必须在SEARCH块中包含完整的行，而不是部分行。系统需要精确的行匹配，无法匹配部分行。例如，如果要匹配包含"const x = 5;"的行，你的SEARCH块必须包括整行，而不仅仅是"x = 5"或其他片段。
 - 使用replace_in_file工具时，如果使用多个SEARCH/REPLACE块，按它们在文件中出现的顺序列出它们。例如，如果你需要同时更改第10行和第50行，首先包括第10行的SEARCH/REPLACE块，然后是第50行的SEARCH/REPLACE块。
-- 关键是在每次工具使用后等待用户的响应，以确认工具使用的成功。例如，如果要求制作一个待办事项应用程序，你将创建一个文件，等待用户响应它已成功创建，然后如果需要创建另一个文件，等待用户响应它已成功创建，等等。${
-	supportsBrowserUse
-		? "然后如果你想测试你的工作，你可能会使用browser_action启动站点，等待用户响应确认站点已启动以及截图，然后可能例如点击按钮测试功能（如果需要），等待用户响应确认按钮已点击以及新状态的截图，最后关闭浏览器。"
-		: ""
-}
+- 关键是在每次工具使用后等待用户的响应，以确认工具使用的成功。例如，如果要求制作一个待办事项应用程序，你将创建一个文件，等待用户响应它已成功创建，然后如果需要创建另一个文件，等待用户响应它已成功创建，等等。${supportsBrowserUse
+    ? "然后如果你想测试你的工作，你可能会使用browser_action启动站点，等待用户响应确认站点已启动以及截图，然后可能例如点击按钮测试功能（如果需要），等待用户响应确认按钮已点击以及新状态的截图，最后关闭浏览器。"
+    : ""
+  }
 - MCP操作应一次使用一个，类似于其他工具使用。在继续其他操作之前等待成功的确认。
 
 ====
@@ -633,42 +627,42 @@ ACT模式与PLAN模式
 5. 用户可能会提供反馈，你可以使用这些反馈进行改进并再次尝试。但不要继续进行无意义的来回对话，即不要以问题或进一步协助的提议结束你的响应。`
 
 export function addUserInstructions(
-	settingsCustomInstructions?: string,
-	globalClineRulesFileInstructions?: string,
-	localClineRulesFileInstructions?: string,
-	localCursorRulesFileInstructions?: string,
-	localCursorRulesDirInstructions?: string,
-	localWindsurfRulesFileInstructions?: string,
-	clineIgnoreInstructions?: string,
-	preferredLanguageInstructions?: string,
+  settingsCustomInstructions?: string,
+  globalClineRulesFileInstructions?: string,
+  localClineRulesFileInstructions?: string,
+  localCursorRulesFileInstructions?: string,
+  localCursorRulesDirInstructions?: string,
+  localWindsurfRulesFileInstructions?: string,
+  clineIgnoreInstructions?: string,
+  preferredLanguageInstructions?: string,
 ) {
-	let customInstructions = ""
-	if (preferredLanguageInstructions) {
-		customInstructions += preferredLanguageInstructions + "\n\n"
-	}
-	if (settingsCustomInstructions) {
-		customInstructions += settingsCustomInstructions + "\n\n"
-	}
-	if (globalClineRulesFileInstructions) {
-		customInstructions += globalClineRulesFileInstructions + "\n\n"
-	}
-	if (localClineRulesFileInstructions) {
-		customInstructions += localClineRulesFileInstructions + "\n\n"
-	}
-	if (localCursorRulesFileInstructions) {
-		customInstructions += localCursorRulesFileInstructions + "\n\n"
-	}
-	if (localCursorRulesDirInstructions) {
-		customInstructions += localCursorRulesDirInstructions + "\n\n"
-	}
-	if (localWindsurfRulesFileInstructions) {
-		customInstructions += localWindsurfRulesFileInstructions + "\n\n"
-	}
-	if (clineIgnoreInstructions) {
-		customInstructions += clineIgnoreInstructions
-	}
+  let customInstructions = ""
+  if (preferredLanguageInstructions) {
+    customInstructions += preferredLanguageInstructions + "\n\n"
+  }
+  if (settingsCustomInstructions) {
+    customInstructions += settingsCustomInstructions + "\n\n"
+  }
+  if (globalClineRulesFileInstructions) {
+    customInstructions += globalClineRulesFileInstructions + "\n\n"
+  }
+  if (localClineRulesFileInstructions) {
+    customInstructions += localClineRulesFileInstructions + "\n\n"
+  }
+  if (localCursorRulesFileInstructions) {
+    customInstructions += localCursorRulesFileInstructions + "\n\n"
+  }
+  if (localCursorRulesDirInstructions) {
+    customInstructions += localCursorRulesDirInstructions + "\n\n"
+  }
+  if (localWindsurfRulesFileInstructions) {
+    customInstructions += localWindsurfRulesFileInstructions + "\n\n"
+  }
+  if (clineIgnoreInstructions) {
+    customInstructions += clineIgnoreInstructions
+  }
 
-	return `
+  return `
 ====
 
 用户的定制指令
